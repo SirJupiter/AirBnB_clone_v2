@@ -73,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -81,7 +81,7 @@ class HBNBCommand(cmd.Cmd):
                         # _args = _args.replace('\"', '')
             line = ' '.join([_cmd, _cls, _id, _args])
 
-        except Exception as mess:
+        except Exception:
             pass
         finally:
             return line
@@ -115,13 +115,16 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
+        if not self.checker(args, ["n", 'ec']):
             return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
+        # if not args:
+        #     print("** class name missing **")
+        #     return
+        # elif args not in HBNBCommand.classes:
+        #     print("** class doesn't exist **")
+        #     return
+        cls, var, val = self.parse_command(args)
+        new_instance = HBNBCommand.classes[cls](**{var: val})
         storage.save()
         print(new_instance.id)
         storage.save()
@@ -187,7 +190,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
@@ -210,7 +213,7 @@ class HBNBCommand(cmd.Cmd):
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            for k, v in storage.all(HBNBCommand.classes[args]).items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -272,7 +275,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -280,10 +283,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
@@ -315,10 +318,64 @@ class HBNBCommand(cmd.Cmd):
 
         new_dict.save()  # save updates to file
 
+    # @staticmethod
+    # def parse_command(line):
+    #     """parse the command entered by the user"""
+
+    #     parts = line.split('.')
+    #     equal_parts = line.split()
+    #     if len(parts) == 2 and parts[1].endswith(')'):
+    #         cls = parts[0]
+    #         parts = parts[1].split("(")
+    #         if len(parts) == 2:
+    #             method = parts[0]
+    #             parts = parts[1].rstrip(")")
+    #             if not parts:
+    #                 return cls, method
+    #             if "{" not in parts:
+    #                 args = [literal_eval(
+    # i.strip()) for i in parts.split(",")]
+    #             else:
+    #                 args = [literal_eval(
+    # i.strip()) for i in parts.split(",", 1)]
+    #             return cls, method, args
+    #         return cls, parts[0]
+    #     if len(equal_parts) == 2:
+    #         var, val = equal_parts[1].split("=")
+    #         return equal_parts[0]. var, val
+    #     else:
+    #         return None
+
+    # @staticmethod
+    # def checker(model, keys):
+    #     """checks if the model string contains any of the specified keys"""
+
+    #     part = model.split()
+    #     if "n" in keys and not model:
+    #         print("** class name missing **")
+    #         return False
+    #     if "l" in keys and len(model.split()) < 2:
+    #         print("** instance id missing **")
+    #         return False
+    #     if "ec" in keys and part[0] not in HBNBCommand.classes:
+    #         print("** class doesn't exist **")
+    #         return False
+    #     if "es" in keys and ".".join(part[0:2]) not in storage.all():
+    #         print("** no instance found **")
+    #         return False
+    #     if "a" in keys and len(model.split()) < 3:
+    #         print("** attribute name missing **")
+    #         return
+    #     if "v" in keys and len(model.split()) < 4:
+    #         print("** value missing **")
+    #         return
+    #     return True
+
     def help_update(self):
         """ Help information for the update class """
         print("Updates an object with new information")
         print("Usage: update <className> <id> <attName> <attVal>\n")
+
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()

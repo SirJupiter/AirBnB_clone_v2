@@ -2,18 +2,26 @@
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
 from datetime import datetime
+from models import storage
 
 
 class BaseModel:
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""
-        if not kwargs:
+        dates = ["created_at", "updated_at"]
+        checks = []
+        for i in kwargs.keys():
+            if i not in dates:
+                checks.append(True)
+        if not kwargs or checks:
             from models import storage
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
             storage.new(self)
+            if kwargs:
+                self.__dict__.update(kwargs)
         else:
             kwargs['updated_at'] = datetime.strptime(kwargs['updated_at'],
                                                      '%Y-%m-%dT%H:%M:%S.%f')
@@ -29,9 +37,44 @@ class BaseModel:
 
     def save(self):
         """Updates updated_at with current time when instance is changed"""
-        from models import storage
         self.updated_at = datetime.now()
+        storage.new(self)
         storage.save()
+
+    # @classmethod
+    # def all(cls):
+    #     """"""
+    #     return storage.get_all(cls.__name__)
+
+    # @classmethod
+    # def count(cls):
+    #     """"""
+    #     return len(cls.all())
+
+    # @classmethod
+    # def show(cls, ids):
+    #     """"""
+    #     return storage.get(f"{cls.__name__}.{ids}")
+
+    # @classmethod
+    # def destroy(cls, ids):
+    #     """"""
+    #     storage.delete(f"{cls.__name__}.{ids}")
+
+    # @classmethod
+    # def update(cls, ids, attr=None, value=None):
+    #     """"""
+    #     obj = cls.show()
+    #     if isinstance(attr, dict):
+    #         for key, value in attr.items():
+    #             setattr(obj, key, value)
+    #     else:
+    #         setattr(obj, attr, value)
+    #     obj.save()
+
+    def delete(self):
+        """delete object"""
+        storage.delete(self)
 
     def to_dict(self):
         """Convert instance into dict format"""
