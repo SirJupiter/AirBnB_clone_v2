@@ -3,7 +3,7 @@
 import cmd
 import sys
 from models.base_model import BaseModel
-from models.__init__ import storage
+from models import storage
 from models.user import User
 from models.place import Place
 from models.state import State
@@ -146,6 +146,7 @@ class HBNBCommand(cmd.Cmd):
                 if '_' in value:
                     value = value.replace('_', ' ')
                 o_dict[key] = value
+            # print([(key, value) for key, value in o_dict.items()])
             created_obj = self.the_classes[class_name](**o_dict)
             print(created_obj.id)
             created_obj.save()
@@ -225,21 +226,26 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, args):
         """ Shows all objects, or all objects of a class"""
-        print_list = []
-
+        all_objects = []
         if args:
-            args = args.split(' ')[0]  # remove possible trailing args
-            if args not in self.the_classes:
+            if args in self.the_classes:
+                for k, v in storage.all(self.the_classes[args]).items():
+                    if hasattr(v, '_sa_instance_state'):
+                        delattr(v, '_sa_instance_state')
+                    cls_name, cls_id = k.split('.')
+                    if cls_name == args:
+                        all_objects.append(str(v))
+                print(all_objects)
+            else:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
         else:
-            for k, v in storage.all(self.the_classes[args]).items():
-                print_list.append(str(v))
-
-        print(print_list)
+            # print all object regardless of the class match
+            for v in storage.all().values():
+                if hasattr(v, '_sa_instance_state'):
+                    delattr(v, '_sa_instance_state')
+                all_objects.append(str(v))
+            print(all_objects)
 
     def help_all(self):
         """ Help information for the all command """

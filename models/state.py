@@ -2,7 +2,7 @@
 """ State Module for HBNB project """
 from models.base_model import BaseModel, Base
 from models import storage_type
-from models import storage
+
 from models.city import City
 from sqlalchemy import Column, String
 from sqlalchemy.orm import relationship
@@ -27,6 +27,7 @@ class State(BaseModel, Base):
         """retuns list of City instances where
         state_id == current State.id
         """
+        from models import storage
         linked_cities = []
         c_cities = storage.all(City)
 

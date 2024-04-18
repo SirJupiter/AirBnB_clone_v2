@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """ Place Module for HBNB project """
 from models.base_model import BaseModel, Base
-from models import storage
+
 from models import storage_type
 # from models.city import City
 # from models.user import User
@@ -62,6 +62,7 @@ class Place(BaseModel, Base):
         based on the attribute amenity_ids that contains
         all Amenity.id linked to Place
         """
+        from models import storage
         all_amenities = storage.all(Amenity)
 
         amenity_list = []
