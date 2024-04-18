@@ -1,6 +1,13 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
 import json
+from models.base_model import BaseModel
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
 class FileStorage:
@@ -10,17 +17,24 @@ class FileStorage:
 
     def all(self, cls=None):
         """Returns a dictionary of models currently in storage"""
-        if cls is None:
-            return self.__objects
-        cls_name = cls.__name__
-        dct = {}
-        for key in self.__objects.keys():
-            if key.split('.')[0] == cls_name:
-                dct[key] = self.__objects[key]
-        return dct
+        all_objects = {}
+        if cls:
+            for k, v in self.__objects.items():
+                cls_name, cls_id = k.split('.')
+                if cls.__name__ == cls_name:
+                    all_objects[k] = v
+                if hasattr(v, '_sa_instance_state'):
+                    delattr(v, '_sa_instance_state')
+            return all_objects
+        for v in self.__objects.values():
+            if hasattr(v, '_sa_instance_state'):
+                delattr(v, '_sa_instance_state')
+        return self.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
+        if hasattr(obj, '_sa_instance_state'):
+            delattr(obj, '_sa_instance_state')
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
 
     def save(self):
@@ -34,13 +48,6 @@ class FileStorage:
 
     def reload(self):
         """Loads storage dictionary from file"""
-        from models.base_model import BaseModel
-        from models.user import User
-        from models.place import Place
-        from models.state import State
-        from models.city import City
-        from models.amenity import Amenity
-        from models.review import Review
 
         classes = {
             'BaseModel': BaseModel, 'User': User, 'Place': Place,
