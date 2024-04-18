@@ -22,7 +22,7 @@ class HBNBCommand(cmd.Cmd):
     # determines prompt for interactive/non-interactive modes
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
-    classes = {
+    the_classes = {
                'BaseModel': BaseModel, 'User': User, 'Place': Place,
                'State': State, 'City': City, 'Amenity': Amenity,
                'Review': Review
@@ -154,7 +154,7 @@ class HBNBCommand(cmd.Cmd):
         if not class_name:
             print("** class name missing **")
             return
-        elif class_name not in HBNBCommand.classes:
+        elif class_name not in HBNBCommand.the_classes:
             print("** class doesn't exist **")
             return
         if os.getenv('HBNB_TYPE_STORAGE') == 'db':
@@ -164,11 +164,11 @@ class HBNBCommand(cmd.Cmd):
                 kwargs['created_at'] = str(datetime.now())
             if "updated_at" not in kwargs:
                 kwargs['updated_at'] = str(datetime.now())
-            new_instance = HBNBCommand.classes[class_name](**kwargs)
+            new_instance = HBNBCommand.the_classes[class_name](**kwargs)
             new_instance.save()
             print(new_instance.id)
         else:
-            new_instance = HBNBCommand.classes[class_name]()
+            new_instance = HBNBCommand.the_classes[class_name]()
             for key, value in kwargs.items():
                 if key not in ignored_attrs:
                     setattr(new_instance, key, value)
@@ -194,7 +194,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if c_name not in HBNBCommand.classes:
+        if c_name not in HBNBCommand.the_classes:
             print("** class doesn't exist **")
             return
 
@@ -225,7 +225,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if c_name not in HBNBCommand.classes:
+        if c_name not in HBNBCommand.the_classes:
             print("** class doesn't exist **")
             return
 
@@ -252,7 +252,7 @@ class HBNBCommand(cmd.Cmd):
 
         if args:
             args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.classes:
+            if args not in HBNBCommand.the_classes:
                 print("** class doesn't exist **")
                 return
             for k, v in storage.all().items():
@@ -292,7 +292,7 @@ class HBNBCommand(cmd.Cmd):
         else:  # class name not present
             print("** class name missing **")
             return
-        if c_name not in HBNBCommand.classes:  # class name invalid
+        if c_name not in HBNBCommand.the_classes:  # class name invalid
             print("** class doesn't exist **")
             return
 

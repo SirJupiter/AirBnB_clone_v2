@@ -4,8 +4,8 @@
 from os import environ
 
 environ['HBNB_ENV'] = 'dev'
-environ['HBNB_MYSQL_USER'] = 'your_mysql_username'
-environ['HBNB_MYSQL_PWD'] = 'your_mysql_password'
-environ['HBNB_MYSQL_HOST'] = 'your_mysql_host'
-environ['HBNB_MYSQL_DB'] = 'your_mysql_database'
+environ['HBNB_MYSQL_USER'] = 'hbnb_dev'
+environ['HBNB_MYSQL_PWD'] = 'hbnb_dev_pwd'
+environ['HBNB_MYSQL_HOST'] = 'localhost'
+environ['HBNB_MYSQL_DB'] = 'hbnb_dev_db'
 environ['HBNB_TYPE_STORAGE'] = 'db'
