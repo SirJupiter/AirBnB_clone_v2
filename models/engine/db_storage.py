@@ -3,7 +3,7 @@
 from os import getenv
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import (create_engine)
-from sqlalchemy.ext.declarative import declarative_base
+# from sqlalchemy.ext.declarative import declarative_base
 from models.base_model import Base
 from models.state import State
 from models.city import City
@@ -37,22 +37,22 @@ class DBStorage:
         Return:
             returns a dictionary of __object
         """
-        dic = {}
+        d_dict = {}
         if cls:
             if type(cls) is str:
                 cls = eval(cls)
             query = self.__session.query(cls)
-            for elem in query:
-                key = "{}.{}".format(type(elem).__name__, elem.id)
-                dic[key] = elem
+            for item in query:
+                key = f"{type(item).__name__}.{item.id}"
+                d_dict[key] = item
         else:
-            lista = [State, City, User, Place, Review, Amenity]
-            for clase in lista:
-                query = self.__session.query(clase)
-                for elem in query:
-                    key = "{}.{}".format(type(elem).__name__, elem.id)
-                    dic[key] = elem
-        return (dic)
+            m_list = [State, City, User, Place, Review, Amenity]
+            for klaus in m_list:
+                query = self.__session.query(klaus).all()  # just added .all()
+                for item in query:
+                    key = f"{type(item).__name__}.{item.id}"
+                    d_dict[key] = item
+        return d_dict
 
     def new(self, obj):
         """add a new element in the table
@@ -73,10 +73,13 @@ class DBStorage:
     def reload(self):
         """configuration
         """
-        Base.metadata.create_all(self.__engine)
-        sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(sec)
-        self.__session = Session()
+        try:
+            Base.metadata.create_all(self.__engine)
+            sec = sessionmaker(bind=self.__engine, expire_on_commit=False)
+            Session = scoped_session(sec)
+            self.__session = Session()
+        except Exception as e:
+            print(f"Reload error: {e}")
 
     def close(self):
         """ calls remove()
