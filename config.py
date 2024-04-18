@@ -1,8 +1,6 @@
 #!/usr/bin/python3
-"""File configures the environmental variables"""
-
+"""Module Script for Configuring Environment Variables"""
 from os import environ
-
 
 HBNB_ENV = environ.get("HBNB_ENV")
 HBNB_MYSQL_USER = environ.get("HBNB_MYSQL_USER")
