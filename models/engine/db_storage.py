@@ -10,12 +10,13 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+from os import getenv
 
 from models.engine.env_config import HBNB_ENV, HBNB_MYSQL_USER, \
-    HBNB_MYSQL_PWD, HBNB_MYSQL_HOST, HBNB_MYSQL_DB
+    HBNB_MYSQL_PWD, HBNB_MYSQL_HOST, HBNB_MYSQL_DB, HBNB_TYPE_STORAGE
 
-# if HBNB_TYPE_STORAGE == 'db':
-#     from models.place import place_amenity
+if HBNB_TYPE_STORAGE == 'db':
+    from models.place import place_amenity
 
 classes = {"User": User, "State": State, "City": City,
            "Amenity": Amenity, "Place": Place, "Review": Review}
