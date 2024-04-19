@@ -10,7 +10,6 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
-from os import getenv
 
 from models.engine.env_config import HBNB_TYPE_STORAGE, \
     HBNB_ENV, HBNB_MYSQL_DB, HBNB_MYSQL_HOST, HBNB_MYSQL_PWD, HBNB_MYSQL_USER
@@ -30,7 +29,8 @@ class DBStorage:
     def __init__(self):
         '''instantiate new dbstorage instance'''
 
-        _env = f'mysql+mysqldb://{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}@{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}'
+        _env = (f'mysql+mysqldb://{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}@'
+                f'{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}')
 
         self.__engine = create_engine(_env, pool_pre_ping=True)
 
