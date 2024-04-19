@@ -11,11 +11,11 @@ from models.review import Review
 from models.state import State
 from models.user import User
 
-from models.engine.env_config import HBNB_TYPE_STORAGE, \
+from models.engine.env_config import \
     HBNB_ENV, HBNB_MYSQL_DB, HBNB_MYSQL_HOST, HBNB_MYSQL_PWD, HBNB_MYSQL_USER
 
-if HBNB_TYPE_STORAGE == 'db':
-    from models.place import place_amenity
+# if HBNB_TYPE_STORAGE == 'db':
+#     from models.place import place_amenity
 
 classes = {"User": User, "State": State, "City": City,
            "Amenity": Amenity, "Place": Place, "Review": Review}
@@ -43,19 +43,21 @@ class DBStorage:
         key = <class-name>.<object-id>
         value = object
         '''
-        dct = {}
+        dictionary = {}
+
         if cls is None:
-            for c in classes.values():
-                objs = self.__session.query(c).all()
+            for c_C in classes.values():
+                objs = self.__session.query(c_C).all()
                 for obj in objs:
                     key = obj.__class__.__name__ + '.' + obj.id
-                    dct[key] = obj
+                    dictionary[key] = obj
         else:
             objs = self.__session.query(cls).all()
             for obj in objs:
                 key = obj.__class__.__name__ + '.' + obj.id
-                dct[key] = obj
-        return dct
+                dictionary[key] = obj
+
+        return dictionary
 
     def new(self, obj):
         '''adds the obj to the current db session'''
@@ -64,9 +66,9 @@ class DBStorage:
                 self.__session.add(obj)
                 self.__session.flush()
                 self.__session.refresh(obj)
-            except Exception as ex:
+            except Exception as e:
                 self.__session.rollback()
-                raise ex
+                raise e
 
     def save(self):
         '''commit all changes of the current db session'''
@@ -77,8 +79,8 @@ class DBStorage:
             is it's not None
         '''
         if obj is not None:
-            self.__session.query(type(obj)).filter(
-                type(obj).id == obj.id).delete()
+            self.__session.query(
+                type(obj)).filter(type(obj).id == obj.id).delete()
 
     def reload(self):
         '''reloads the database'''
