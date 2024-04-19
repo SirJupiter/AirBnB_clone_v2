@@ -40,13 +40,13 @@ class test_fileStorage(unittest.TestCase):
 
     def test_all(self):
         """ __objects is properly returned """
-        new = BaseModel()
+        _ = BaseModel()
         temp = storage.all()
         self.assertIsInstance(temp, dict)
 
     def test_base_model_instantiation(self):
         """ File is not created on BaseModel save """
-        new = BaseModel()
+        _ = BaseModel()
         self.assertFalse(os.path.exists('file.json'))
 
     def test_empty(self):
@@ -54,12 +54,12 @@ class test_fileStorage(unittest.TestCase):
         new = BaseModel()
         thing = new.to_dict()
         new.save()
-        new2 = BaseModel(**thing)
+        _ = BaseModel(**thing)
         self.assertNotEqual(os.path.getsize('file.json'), 0)
 
     def test_save(self):
         """ FileStorage save method """
-        new = BaseModel()
+        _ = BaseModel()
         storage.save()
         self.assertTrue(os.path.exists('file.json'))
 
@@ -75,7 +75,7 @@ class test_fileStorage(unittest.TestCase):
 
     def test_reload_empty(self):
         """ Load from an empty file """
-        with open('file.json', 'w') as f:
+        with open('file.json', 'w') as _:
             pass
         with self.assertRaises(ValueError):
             storage.reload()

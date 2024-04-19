@@ -3,7 +3,6 @@
 from models.base_model import BaseModel, Base
 from datetime import datetime
 import unittest
-from uuid import UUID
 import json
 import os
 
@@ -57,7 +56,7 @@ class test_basemodel(unittest.TestCase):
         copy = i.to_dict()
         copy.update({1: 2})
         with self.assertRaises(TypeError):
-            new = BaseModel(**copy)
+            _ = BaseModel(**copy)
 
     def test_save(self):
         """ Testing save metthod"""
@@ -147,7 +146,7 @@ class test_basemodel(unittest.TestCase):
         """ testing kwargs again with none"""
         n = {None: None}
         with self.assertRaises(TypeError):
-            new = self.value(**n)
+            _ = self.value(**n)
 
     def test_kwargs_one(self):
         """ testing kwargs with one arg"""
