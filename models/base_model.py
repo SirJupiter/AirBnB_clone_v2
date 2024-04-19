@@ -1,12 +1,17 @@
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, DATETIME
+from sqlalchemy import Column, String, DateTime
 from models import storage_type
 
 Base = declarative_base()
+
+
+def get_utc_now():
+    """Function gets the instant time"""
+    return datetime.now(timezone.utc)
 
 
 class BaseModel:
@@ -17,16 +22,9 @@ class BaseModel:
         created_at (sqlalchemy DateTime): The datetime at creation.
         updated_at (sqlalchemy DateTime): The datetime of last update.
     """
-    id = Column(String(60),
-                nullable=False,
-                primary_key=True,
-                unique=True)
-    created_at = Column(DATETIME,
-                        nullable=False,
-                        default=datetime.utcnow())
-    updated_at = Column(DATETIME,
-                        nullable=False,
-                        default=datetime.utcnow())
+    id = Column(String(60), primary_key=True, nullable=False)
+    created_at = Column(DateTime, default=get_utc_now, nullable=False)
+    updated_at = Column(DateTime, default=get_utc_now, nullable=False)
 
     def __init__(self, *args, **kwargs):
         """Instatntiates a new model"""

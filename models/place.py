@@ -9,23 +9,20 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.sql.schema import Table
 from sqlalchemy.orm import relationship
 
+p = Column('place_id', String(60), ForeignKey('places.id'), primary_key=True,
+           nullable=False)
+a = Column('amenity_id', String(60), ForeignKey('amenities.id'),
+           primary_key=True, nullable=False)
 
 if storage_type == 'db':
-    place_amenity = Table('place_amenity', Base.metadata,
-                          Column('place_id', String(60),
-                                 ForeignKey('places.id'),
-                                 primary_key=True,
-                                 nullable=False),
-                          Column('amenity_id', String(60),
-                                 ForeignKey('amenities.id'),
-                                 primary_key=True,
-                                 nullable=False)
-                          )
+    place_amenity = Table('place_amenity', Base.metadata, p, a)
 
 
 class Place(BaseModel, Base):
-    """ A place to stay """
+    """ A place to stay:
+    Will be a table in database"""
     __tablename__ = 'places'
+
     if storage_type == 'db':
         city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
         user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
@@ -37,10 +34,11 @@ class Place(BaseModel, Base):
         price_by_night = Column(Integer, nullable=False, default=0)
         latitude = Column(Float, nullable=True)
         longitude = Column(Float, nullable=True)
-        reviews = relationship('Review', backref='place',
-                               cascade='all, delete, delete-orphan')
-        amenities = relationship('Amenity', secondary=place_amenity,
-                                 viewonly=False, backref='place_amenities')
+        reviews = relationship(
+            'Review', backref='place', cascade='all, delete, delete-orphan')
+        amenities = relationship(
+            'Amenity', secondary=place_amenity, viewonly=False,
+            backref='place_amenities')
     else:
         city_id = ""
         user_id = ""
@@ -61,12 +59,15 @@ class Place(BaseModel, Base):
                 FileStorage relationship between Place and Review
             '''
             from models import storage
-            all_revs = storage.all(Review)
-            lst = []
-            for rev in all_revs.values():
-                if rev.place_id == self.id:
-                    lst.append(rev)
-            return lst
+            all_reviews = storage.all(Review)
+
+            review_list = []
+
+            for r in all_reviews.values():
+                if r.place_id == self.id:
+                    review_list.append(r)
+
+            return review_list
 
         @property
         def amenities(self):
@@ -75,12 +76,15 @@ class Place(BaseModel, Base):
                 contains all Amenity.id linked to the Place
             '''
             from models import storage
-            all_amens = storage.all(Amenity)
-            lst = []
-            for amen in all_amens.values():
-                if amen.id in self.amenity_ids:
-                    lst.append(amen)
-            return lst
+            all_amenities = storage.all(Amenity)
+
+            amenity_list = []
+
+            for a_amenity in all_amenities.values():
+                if a_amenity.id in self.amenity_ids:
+                    amenity_list.append(a_amenity)
+
+            return amenity_list
 
         @amenities.setter
         def amenities(self, obj):

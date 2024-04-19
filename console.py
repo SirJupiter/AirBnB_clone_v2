@@ -23,15 +23,24 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) ' if sys.__stdin__.isatty() else ''
 
     the_classes = {
-               'BaseModel': BaseModel, 'User': User, 'Place': Place,
-               'State': State, 'City': City, 'Amenity': Amenity,
+               'BaseModel': BaseModel,
+               'User': User,
+               'Place': Place,
+               'State': State,
+               'City': City,
+               'Amenity': Amenity,
                'Review': Review
               }
+
     dot_cmds = ['all', 'count', 'show', 'destroy', 'update']
+
     types = {
-             'number_rooms': int, 'number_bathrooms': int,
-             'max_guest': int, 'price_by_night': int,
-             'latitude': float, 'longitude': float
+             'number_rooms': int,
+             'number_bathrooms': int,
+             'max_guest': int,
+             'price_by_night': int,
+             'latitude': float,
+             'longitude': float
             }
 
     def preloop(self):
@@ -119,44 +128,45 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        ignored_attrs = ('id', 'created_at', 'updated_at', '__class__')
-        name_pattern = r'(?P<name>(?:[a-zA-Z]|_)(?:[a-zA-Z]|\d|_)*)'
-        class_match = re.match(name_pattern, args)
+        attrs_not_considered = ('id', 'created_at', 'updated_at', '__class__')
+        name_pat = r'(?P<name>(?:[a-zA-Z]|_)(?:[a-zA-Z]|\d|_)*)'
+        class_match = re.match(name_pat, args)
         kwargs = {}
+
         if class_match is not None:
             class_name = class_match.group('name')
             params_str = args[len(class_name):].strip()
             params = params_str.split(' ')
-            str_pattern = r'(?P<t_str>"([^"]|\")*")'
-            float_pattern = r'(?P<t_float>[-+]?\d+\.\d+)'
-            int_pattern = r'(?P<t_int>[-+]?\d+)'
-            param_pattern = '{}=({}|{}|{})'.format(
-                name_pattern,
-                str_pattern,
-                float_pattern,
-                int_pattern
-            )
+            str_pat = r'(?P<t_str>"([^"]|\")*")'
+            float_pat = r'(?P<t_float>[-+]?\d+\.\d+)'
+            int_pat = r'(?P<t_int>[-+]?\d+)'
+            param_pat = f'{name_pat}=({str_pat}|{float_pat}|{int_pat})'
+
             for param in params:
-                param_match = re.fullmatch(param_pattern, param)
+                param_match = re.fullmatch(param_pat, param)
                 if param_match is not None:
                     key_name = param_match.group('name')
-                    str_v = param_match.group('t_str')
-                    float_v = param_match.group('t_float')
-                    int_v = param_match.group('t_int')
-                    if float_v is not None:
-                        kwargs[key_name] = float(float_v)
-                    if int_v is not None:
-                        kwargs[key_name] = int(int_v)
-                    if str_v is not None:
-                        kwargs[key_name] = str_v[1:-1].replace('_', ' ')
+                    val_str = param_match.group('t_str')
+                    val_float = param_match.group('t_float')
+                    val_int = param_match.group('t_int')
+
+                    if val_float is not None:
+                        kwargs[key_name] = float(val_float)
+                    if val_int is not None:
+                        kwargs[key_name] = int(val_int)
+                    if val_str is not None:
+                        kwargs[key_name] = val_str[1:-1].replace('_', ' ')
+
         else:
             class_name = args
+
         if not class_name:
             print("** class name missing **")
             return
-        elif class_name not in HBNBCommand.the_classes:
+        elif class_name not in self.the_classes:
             print("** class doesn't exist **")
             return
+
         if os.getenv('HBNB_TYPE_STORAGE') == 'db':
             if "id" not in kwargs:
                 kwargs['id'] = str(uuid.uuid4())
@@ -164,13 +174,13 @@ class HBNBCommand(cmd.Cmd):
                 kwargs['created_at'] = str(datetime.now())
             if "updated_at" not in kwargs:
                 kwargs['updated_at'] = str(datetime.now())
-            new_instance = HBNBCommand.the_classes[class_name](**kwargs)
+            new_instance = self.the_classes[class_name](**kwargs)
             new_instance.save()
             print(new_instance.id)
         else:
-            new_instance = HBNBCommand.the_classes[class_name]()
+            new_instance = self.the_classes[class_name]()
             for key, value in kwargs.items():
-                if key not in ignored_attrs:
+                if key not in attrs_not_considered:
                     setattr(new_instance, key, value)
             new_instance.save()
             print(new_instance.id)
@@ -194,7 +204,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if class_name not in HBNBCommand.the_classes:
+        if class_name not in self.the_classes:
             print("** class doesn't exist **")
             return
 
@@ -218,6 +228,7 @@ class HBNBCommand(cmd.Cmd):
         new = args.partition(" ")
         class_name = new[0]
         class_id = new[2]
+
         if class_id and ' ' in class_id:
             class_id = class_id.partition(' ')[0]
 
@@ -225,7 +236,7 @@ class HBNBCommand(cmd.Cmd):
             print("** class name missing **")
             return
 
-        if class_name not in HBNBCommand.the_classes:
+        if class_name not in self.the_classes:
             print("** class doesn't exist **")
             return
 
@@ -252,15 +263,15 @@ class HBNBCommand(cmd.Cmd):
 
         if args:
             args = args.split(' ')[0]  # remove possible trailing args
-            if args not in HBNBCommand.the_classes:
+            if args not in self.the_classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all().items():
-                if k.split('.')[0] == args:
-                    print_list.append(str(v))
+            for key, value in storage.all().items():
+                if key.split('.')[0] == args:
+                    print_list.append(str(value))
         else:
-            for k, v in storage.all().items():
-                print_list.append(str(v))
+            for key, value in storage.all().items():
+                print_list.append(str(value))
 
         print(print_list)
 
@@ -272,9 +283,10 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage.all().items():
-            if args == k.split('.')[0]:
+        for key, value in storage.all().items():
+            if args == key.split('.')[0]:
                 count += 1
+
         print(count)
 
     def help_count(self):
@@ -283,7 +295,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, args):
         """ Updates a certain object with new info """
-        class_name = class_id = att_name = att_val = kwargs = ''
+        class_name = class_id = attrib_name = attrib_val = kwargs = ''
 
         # isolate cls from id/args, ex: (<cls>, delim, <id/args>)
         args = args.partition(" ")
@@ -292,7 +304,7 @@ class HBNBCommand(cmd.Cmd):
         else:  # class name not present
             print("** class name missing **")
             return
-        if class_name not in HBNBCommand.the_classes:  # class name invalid
+        if class_name not in self.the_classes:  # class name invalid
             print("** class doesn't exist **")
             return
 
@@ -316,51 +328,51 @@ class HBNBCommand(cmd.Cmd):
         if '{' in args[2] and '}' in args[2] and type(eval(args[2])) is dict:
             kwargs = eval(args[2])
             args = []  # reformat kwargs into list, ex: [<name>, <value>, ...]
-            for k, v in kwargs.items():
-                args.append(k)
-                args.append(v)
+            for key, value in kwargs.items():
+                args.append(key)
+                args.append(value)
         else:  # isolate args
             args = args[2]
             if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
-                att_name = args[1:second_quote]
+                attrib_name = args[1:second_quote]
                 args = args[second_quote + 1:]
 
             args = args.partition(' ')
 
-            # if att_name was not quoted arg
-            if not att_name and args[0] != ' ':
-                att_name = args[0]
+            # if attrib_name was not quoted arg
+            if not attrib_name and args[0] != ' ':
+                attrib_name = args[0]
             # check for quoted val arg
             if args[2] and args[2][0] == '\"':
-                att_val = args[2][1:args[2].find('\"', 1)]
+                attrib_val = args[2][1:args[2].find('\"', 1)]
 
-            # if att_val was not quoted arg
-            if not att_val and args[2]:
-                att_val = args[2].partition(' ')[0]
+            # if attrib_val was not quoted arg
+            if not attrib_val and args[2]:
+                attrib_val = args[2].partition(' ')[0]
 
-            args = [att_name, att_val]
+            args = [attrib_name, attrib_val]
 
         # retrieve dictionary of current objects
         new_dict = storage.all()[key]
 
         # iterate through attr names and values
-        for i, att_name in enumerate(args):
+        for i, attrib_name in enumerate(args):
             # block only runs on even iterations
             if (i % 2 == 0):
-                att_val = args[i + 1]  # following item is value
-                if not att_name:  # check for att_name
+                attrib_val = args[i + 1]  # following item is value
+                if not attrib_name:  # check for attrib_name
                     print("** attribute name missing **")
                     return
-                if not att_val:  # check for att_value
+                if not attrib_val:  # check for att_value
                     print("** value missing **")
                     return
                 # type cast as necessary
-                if att_name in HBNBCommand.types:
-                    att_val = HBNBCommand.types[att_name](att_val)
+                if attrib_name in self.types:
+                    attrib_val = self.types[attrib_name](attrib_val)
 
                 # update dictionary with name, value pair
-                new_dict.__dict__.update({att_name: att_val})
+                new_dict.__dict__.update({attrib_name: attrib_val})
 
         new_dict.save()  # save updates to file
 
