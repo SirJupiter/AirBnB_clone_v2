@@ -1,11 +1,11 @@
 #!/usr/bin/python3
-""" Console Module """
+""" This is the Console Module """
 import cmd
 import sys
 import re
 import os
-from datetime import datetime
 import uuid
+from datetime import datetime
 from models.base_model import BaseModel
 from models import storage
 from models.user import User
@@ -183,26 +183,26 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, args):
         """ Method to show an individual object """
         new = args.partition(" ")
-        c_name = new[0]
-        c_id = new[2]
+        class_name = new[0]
+        class_id = new[2]
 
         # guard against trailing args
-        if c_id and ' ' in c_id:
-            c_id = c_id.partition(' ')[0]
+        if class_id and ' ' in class_id:
+            class_id = class_id.partition(' ')[0]
 
-        if not c_name:
+        if not class_name:
             print("** class name missing **")
             return
 
-        if c_name not in HBNBCommand.the_classes:
+        if class_name not in HBNBCommand.the_classes:
             print("** class doesn't exist **")
             return
 
-        if not c_id:
+        if not class_id:
             print("** instance id missing **")
             return
 
-        key = c_name + "." + c_id
+        key = class_name + "." + class_id
         try:
             print(storage.all()[key])
         except KeyError:
@@ -216,24 +216,24 @@ class HBNBCommand(cmd.Cmd):
     def do_destroy(self, args):
         """ Destroys a specified object """
         new = args.partition(" ")
-        c_name = new[0]
-        c_id = new[2]
-        if c_id and ' ' in c_id:
-            c_id = c_id.partition(' ')[0]
+        class_name = new[0]
+        class_id = new[2]
+        if class_id and ' ' in class_id:
+            class_id = class_id.partition(' ')[0]
 
-        if not c_name:
+        if not class_name:
             print("** class name missing **")
             return
 
-        if c_name not in HBNBCommand.the_classes:
+        if class_name not in HBNBCommand.the_classes:
             print("** class doesn't exist **")
             return
 
-        if not c_id:
+        if not class_id:
             print("** instance id missing **")
             return
 
-        key = c_name + "." + c_id
+        key = class_name + "." + class_id
 
         try:
             storage.delete(storage.all()[key])
@@ -283,29 +283,29 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, args):
         """ Updates a certain object with new info """
-        c_name = c_id = att_name = att_val = kwargs = ''
+        class_name = class_id = att_name = att_val = kwargs = ''
 
         # isolate cls from id/args, ex: (<cls>, delim, <id/args>)
         args = args.partition(" ")
         if args[0]:
-            c_name = args[0]
+            class_name = args[0]
         else:  # class name not present
             print("** class name missing **")
             return
-        if c_name not in HBNBCommand.the_classes:  # class name invalid
+        if class_name not in HBNBCommand.the_classes:  # class name invalid
             print("** class doesn't exist **")
             return
 
         # isolate id from args
         args = args[2].partition(" ")
         if args[0]:
-            c_id = args[0]
+            class_id = args[0]
         else:  # id not present
             print("** instance id missing **")
             return
 
         # generate key from class and id
-        key = c_name + "." + c_id
+        key = class_name + "." + class_id
 
         # determine if key is present
         if key not in storage.all():
