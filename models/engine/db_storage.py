@@ -12,7 +12,10 @@ from models.state import State
 from models.user import User
 from os import getenv
 
-if getenv('HBNB_TYPE_STORAGE') == 'db':
+from models.engine.env_config import HBNB_TYPE_STORAGE, \
+    HBNB_ENV, HBNB_MYSQL_DB, HBNB_MYSQL_HOST, HBNB_MYSQL_PWD, HBNB_MYSQL_USER
+
+if HBNB_TYPE_STORAGE == 'db':
     from models.place import place_amenity
 
 classes = {"User": User, "State": State, "City": City,
@@ -26,11 +29,6 @@ class DBStorage:
 
     def __init__(self):
         '''instantiate new dbstorage instance'''
-        HBNB_MYSQL_USER = getenv('HBNB_MYSQL_USER')
-        HBNB_MYSQL_PWD = getenv('HBNB_MYSQL_PWD')
-        HBNB_MYSQL_HOST = getenv('HBNB_MYSQL_HOST')
-        HBNB_MYSQL_DB = getenv('HBNB_MYSQL_DB')
-        HBNB_ENV = getenv('HBNB_ENV')
 
         _env = f'mysql+mysqldb://{HBNB_MYSQL_USER}:{HBNB_MYSQL_PWD}@{HBNB_MYSQL_HOST}/{HBNB_MYSQL_DB}'
 
