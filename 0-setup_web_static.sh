@@ -62,7 +62,7 @@ new_config=$(cat <<EOF
 
         location /hbnb_static {
 		alias /data/web_static/current/;
-	}
+        }
 
 EOF
 )
