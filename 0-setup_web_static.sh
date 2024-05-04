@@ -26,7 +26,7 @@ function install_nginx() {
 install_nginx
 
 # Start Nginx
-sudo service nginx restart
+sudo service nginx start
 
 # Check if Nginx is running
 if ! pgrep -x "nginx" > /dev/null; then
@@ -37,12 +37,8 @@ else
 fi
 
 # Create necessary directories
-sudo mkdir -p /data/
-sudo mkdir -p /data/web_static/
-sudo mkdir -p /data/web_static/releases/
-sudo mkdir -p /data/web_static/shared/
-sudo mkdir -p /data/web_static/releases/test/
-sudo touch /data/web_static/releases/test/index.html
+sudo mkdir -p /data/web_static/releases/test
+sudo mkdir -p /data/web_static/shared
 
 # Create a fake HTML file /data/web_static/releases/test/index.html (with simple content, to test your Nginx configuration)
 sudo echo "<html>
