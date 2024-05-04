@@ -72,5 +72,3 @@ else
 fi
 
 sudo service nginx restart
-
-exit 0
