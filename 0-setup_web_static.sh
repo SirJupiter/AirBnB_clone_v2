@@ -58,21 +58,26 @@ sudo chown -R ubuntu:ubuntu /data/*
 # Update the Nginx configuration to serve the content of /data/web_static/current/ to hbnb_static (ex: https://mydomainname.tech/hbnb_static). Don’t forget to restart Nginx after updating the configuration:
 # Use alias inside your Nginx configuration
 nginx_config_file="/etc/nginx/sites-available/default"
-new_config="location /hbnb_static {\n\t\
-	alias /data/web_static/current/;\n\t\
-	}\n\n\
+new_config="        location /hbnb_static {\n\t\
+alias /data/web_static/current/;\n\t\
+}\n\
 "
 
 if ! sudo sed -i "/server_name _;/a $new_config" "$nginx_config_file"; then
-	echo -e "\nxxxx    Error: Configuration unsuccessful    xxxx\n"
+	echo -e "\nxxxx    Error appending configuration    xxxx\n"
 	exit 1
 else
-	echo -e "\n----      Nginx configuration successful!      ----\n"
+	echo -e "\n----      Nginx configuration appended!      ----\n"
 fi
 
 sudo ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/
 
-sudo service nginx restart
+if ! sudo service nginx restart; then
+	echo -e "\nxxxx      Error: Nginx could not restart      xxxx\n"
+	exit 1
+else
+	echo -e "\n----      Nginx restart successful!      ----\n"
+fi
 
 echo -e "\n----      Configuration complete!      ----\n"
 
