@@ -7,8 +7,8 @@ from fabric.api import run, put, env
 
 # Set Fabric environment variables
 env.hosts = ['54.145.81.146', '18.207.234.98']  # servers addresses
-# env.user = 'ubuntu'
-# env.key_filename = '~/.ssh/school'
+env.user = 'ubuntu'
+env.key_filename = '~/.ssh/school'
 
 
 def do_deploy(archive_path):
@@ -22,17 +22,17 @@ def do_deploy(archive_path):
         return False
 
     try:
-        the_file = archive_path.split("/")[-1]
-        no_ext = the_file.split(".")[0]
+        file_n = archive_path.split("/")[-1]
+        no_ext = file_n.split(".")[0]
         path = "/data/web_static/releases/"
         put(archive_path, '/tmp/')
-        run(f'mkdir -p {path}{no_ext}/')
-        run(f'tar -xzf /tmp/{the_file} -C {path}{no_ext}/')
-        run(f'rm /tmp/{the_file}')
-        run(f'mv {path}{no_ext}/web_static/* {path}{no_ext}/')
-        run(f'rm -rf {path}{no_ext}/web_static')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_n, path, no_ext))
+        run('rm /tmp/{}'.format(file_n))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
         run('rm -rf /data/web_static/current')
-        run(f'ln -s {path}{no_ext}/ /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
     except Exception:
         return False
