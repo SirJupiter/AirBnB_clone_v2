@@ -5,7 +5,7 @@ using the function do_pack
 """
 
 from datetime import datetime
-import fabric.api import local
+from fabric.api import local
 
 
 def do_pack():
@@ -27,7 +27,7 @@ def do_pack():
     local('mkdir -p versions')
     created = local(f'tar -cvzf {darchive} web_static')
 
-    if created is not None:
-        return darchive
-    else:
+    if created.failed:
         return None
+
+    return darchive
