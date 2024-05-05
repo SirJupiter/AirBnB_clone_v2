@@ -27,7 +27,7 @@ def do_pack():
     local('mkdir -p versions')
     created = local(f'tar -cvzf {darchive} web_static')
 
-    if created.failed:
+    if created is not None:
+        return darchive
+    else:
         return None
-
-    return darchive
