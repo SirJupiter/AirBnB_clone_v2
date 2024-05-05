@@ -22,10 +22,10 @@ def do_pack():
     hour = time.hour
     minute = time.minute
     sec = time.second
-    darchive = f"web_static_{year}{month}{day}{hour}{minute}{sec}.tgz"
+    darchive = f"versions/web_static_{year}{month}{day}{hour}{minute}{sec}.tgz"
 
     local('mkdir -p versions')
-    created = local(f'tar -cvzf versions/{darchive} web_static')
+    created = local(f'tar -cvzf {darchive} web_static')
 
     if created.failed:
         return None
