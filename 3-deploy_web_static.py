@@ -88,5 +88,5 @@ def deploy():
     if archive_path is None:
         return False
 
-    # return_val = do_deploy(archive_path)
-    # return return_val
+    return_val = do_deploy(archive_path)
+    return return_val
