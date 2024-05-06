@@ -25,7 +25,7 @@ def do_deploy(archive_path):
         file = archive_path.split('/')[1]
         web_dir = file.split('.')[0]
 
-        put(f"versions/{file}", "/tmp/")
+        put(archive_path, "/tmp/")
 
         new_path = f"/data/web_static/releases/{web_dir}/"
 
@@ -34,6 +34,10 @@ def do_deploy(archive_path):
         run(f"tar -xvzf /tmp/{file} -C {new_path}")
 
         run(f"rm /tmp/{file}")
+
+        run(f"mv {new_path}/web_static/* {new_path}")
+
+        run(f"rm -rf {new_path}/web_static")
 
         run("rm -rf /data/web_static/current")
 
