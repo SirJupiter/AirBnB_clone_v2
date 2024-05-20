@@ -15,7 +15,7 @@ def route():
     Return:
         render_template 8-cities_by_states.html
     """
-    states = storage.all(State).values()
+    states = storage.all(State)
     return render_template('8-cities_by_states.html', states=states)
 
 

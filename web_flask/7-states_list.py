@@ -19,7 +19,7 @@ def route():
         """Sorts a state object by its name attribute"""
         return state.name
 
-    states = sorted(list(storage.all(State).values()), key=sort_by_name)
+    states = storage.all(State)
     return render_template('7-states_list.html', states=states)
 
 
