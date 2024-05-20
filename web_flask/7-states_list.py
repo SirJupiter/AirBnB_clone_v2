@@ -14,7 +14,11 @@ def route():
     Return:
         render_template 7-states_list.html
     """
-    states = storage.all("State")
+    def sort_by_name(state):
+        """Sorts a state object by its name attribute"""
+        return state.name
+
+    states = sorted(list(storage.all("State").values()), key=sort_by_name)
     return render_template('7-states_list.html', states=states)
 
 
