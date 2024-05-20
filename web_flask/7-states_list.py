@@ -3,6 +3,7 @@
 
 from flask import Flask, render_template
 from models import storage
+from models.state import State
 
 app = Flask(__name__)
 
@@ -18,7 +19,7 @@ def route():
         """Sorts a state object by its name attribute"""
         return state.name
 
-    states = sorted(list(storage.all("State").values()), key=sort_by_name)
+    states = sorted(list(storage.all(State).values()), key=sort_by_name)
     return render_template('7-states_list.html', states=states)
 
 
